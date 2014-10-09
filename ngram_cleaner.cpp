@@ -27,9 +27,11 @@ void ngram_cleaner::condense_and_clean_1gram_data(string filename,
           if (parts_of_speech.count(possible_part_of_speech_split.at(1)) != 0) {
             current_part_of_speech = possible_part_of_speech_split.at(1);
           } else {
+            // this implies _ in word itself, but have already checked for this above
             current_part_of_speech = "UNKNOWN";
           }
         } else {
+          // no part of speech classification in this 1-gram
           current_part_of_speech = "UNKNOWN";
         }
         if (all_the_words->count(current_actual_word) == 0) {
