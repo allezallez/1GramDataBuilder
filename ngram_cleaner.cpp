@@ -9,20 +9,25 @@ const unordered_set<string> ngram_cleaner::parts_of_speech {"NOUN", "VERB", "ADJ
 
 void ngram_cleaner::condense_and_clean_1gram_data(string filename, 
     unordered_map<string, vector<string>> * all_the_words) {
-
-
+  // temp variables
   vector<string> this_split_line;
   string current_part_of_speech;
   string current_actual_word;
   string this_line;
+  
   ifstream dictionary_reader(filename);
   while (getline(dictionary_reader, this_line)) {
+    // google separates ngram data with tabs
     this_split_line = StringTools::split(this_line, '\t');
+    // check for year and occurences thresholds
     if (stoi(this_split_line.at(1)) > EARLIEST_YEAR 
         && stoi(this_split_line.at(2)) > MINIMUM_WORD_OCCURENCES ) {
+      // google separates parts of speech (noun, verb etc) with _ characters
       vector<string> possible_part_of_speech_split = StringTools::split(this_split_line.at(0), '_');
       current_actual_word = StringTools::to_upper_case(possible_part_of_speech_split.at(0));
+      // check for bad word (there are many)
       if (StringTools::check_proper_word(current_actual_word)) {
+        // check if this word is classified
         if (possible_part_of_speech_split.size() > 1) {
           if (parts_of_speech.count(possible_part_of_speech_split.at(1)) != 0) {
             current_part_of_speech = possible_part_of_speech_split.at(1);
@@ -34,6 +39,7 @@ void ngram_cleaner::condense_and_clean_1gram_data(string filename,
           // no part of speech classification in this 1-gram
           current_part_of_speech = "UNKNOWN";
         }
+        // check if we already have data on this word
         if (all_the_words->count(current_actual_word) == 0) {
           vector<string> new_word_data;
           new_word_data.push_back(current_actual_word);
