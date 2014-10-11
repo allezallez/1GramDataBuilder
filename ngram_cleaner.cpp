@@ -39,18 +39,16 @@ void ngram_cleaner::condense_and_clean_1gram_data(string filename,
           // no part of speech classification in this 1-gram
           current_part_of_speech = "UNKNOWN";
         }
-        // check if we already have data on this word
+        // have not seen this word at all before
         if (all_the_words->count(current_actual_word) == 0) {
           vector<string> new_word_data;
           new_word_data.push_back(current_actual_word);
           new_word_data.push_back(this_split_line.at(2));
-          new_word_data.push_back(this_split_line.at(3));
           new_word_data.push_back(current_part_of_speech);
           (*all_the_words)[current_actual_word] = new_word_data;
         } else {
           vector<string> * this_vector = &(*all_the_words)[current_actual_word];
           this_vector->at(1) = to_string(stoi(this_vector->at(1)) + stoi(this_split_line[2]));
-          this_vector->at(2) = to_string(stoi(this_vector->at(2)) + stoi(this_split_line[3]));
           if(find(++this_vector->begin(), this_vector->end(), current_part_of_speech)
               == this_vector->end()) {
             this_vector->push_back(current_part_of_speech);
