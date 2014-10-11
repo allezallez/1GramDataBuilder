@@ -43,15 +43,25 @@ void ngram_cleaner::condense_and_clean_1gram_data(string filename,
         if (all_the_words->count(current_actual_word) == 0) {
           vector<string> new_word_data;
           new_word_data.push_back(current_actual_word);
-          new_word_data.push_back(this_split_line.at(2));
           new_word_data.push_back(current_part_of_speech);
+          new_word_data.push_back(this_split_line.at(2));
           (*all_the_words)[current_actual_word] = new_word_data;
+        // have seen this word before
         } else {
           vector<string> * this_vector = &(*all_the_words)[current_actual_word];
-          this_vector->at(1) = to_string(stoi(this_vector->at(1)) + stoi(this_split_line[2]));
-          if(find(++this_vector->begin(), this_vector->end(), current_part_of_speech)
-              == this_vector->end()) {
+          vector<string>::iterator part_of_speech_searcher = 
+              find(++this_vector->begin(), this_vector->end(), current_part_of_speech);
+          // no longer using cumulative counting:
+          // this_vector->at(1) = to_string(stoi(this_vector->at(1)) + stoi(this_split_line[2]));
+          
+          // haven't seen this part of speech before
+          if( part_of_speech_searcher == this_vector->end()) {
             this_vector->push_back(current_part_of_speech);
+            this_vector->push_back(this_split_line[2]);
+          // have seen this part of speech before
+          } else {
+            part_of_speech_searcher++;
+            *part_of_speech_searcher = to_string(stoi(*part_of_speech_searcher) + stoi(this_split_line[2]));
           }
         }
       }
